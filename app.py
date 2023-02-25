@@ -19,11 +19,11 @@ def get_forecast():
 
 @app.route('/readiness')
 def readiness():
-    return "Sucess"
+    return "Success"
 
 @app.route('/liveness')
 def liveness():
-    return "Sucess"
+    return "Success"
  
 if __name__ == '__main__':
     app.run()

@@ -3,7 +3,7 @@ import requests
 import os
 
 API_KEY = os.getenv("API_KEY")
-#1db1db31def7dd7eb1e1d5b587c463de
+
 app = Flask(__name__)
  
 @app.route('/')

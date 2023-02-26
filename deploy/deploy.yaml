@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forecast-api
+spec:
+  selector:
+    matchLabels:
+      app: forecast-api
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: forecast-api
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: forecast-api
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - sleep
+              - "10"
+        image: ${IMAGE_TAG}
+        env:
+        - name: API_KEY
+          value: "xxxxxxxxxx"
+        resources:
+          limits:
+            cpu: 4
+            memory: 4024Mi
+          requests:
+            cpu: 0.1
+            memory: 512Mi
+        ports:
+        - name: api
+          containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /liveness
+            port: 5000
+          initialDelaySeconds: 60
+          timeoutSeconds: 45
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: readiness
+            port: 5000
+          initialDelaySeconds: 60
+          timeoutSeconds: 45
+          periodSeconds: 3
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forecast-api
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+  selector:
+    app: forecast-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forecast-api
+spec:
+  rules:
+  - host: xxxxxxxxxxxxxxxxxxx.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: forecast-api
+            port:
+              number: 5000
+  ingressClassName: nginx
